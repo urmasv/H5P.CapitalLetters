@@ -1,0 +1,143 @@
+{
+  "semantics": [
+    {
+      "name": "taskDescription",
+      "type": "text",
+      "widget": "html",
+      "label": "Instrucciones para el alumnado",
+      "importance": "high",
+      "default": "Haz clic en las letras que deberían estar escritas con mayúscula.",
+      "description": "Instrucción que se muestra encima de la tarea.",
+      "tags": [
+        "p",
+        "br",
+        "strong",
+        "em",
+        "u",
+        "ul",
+        "ol",
+        "li",
+        "a",
+        "span",
+        "sub",
+        "sup"
+      ]
+    },
+    {
+      "name": "correctText",
+      "type": "text",
+      "widget": "textarea",
+      "label": "Texto correcto",
+      "importance": "high",
+      "default": "¡Hola, mundo! Me llamo María. La capital de Estonia es Tallin.",
+      "description": "Introduce el texto con su forma correcta. Al jugador se le mostrará el mismo texto completamente en minúsculas. Las letras que aquí estén en mayúscula se consideran respuestas correctas."
+    },
+    {
+      "name": "behaviour",
+      "type": "group",
+      "label": "Ajustes de comportamiento",
+      "importance": "low",
+      "fields": [
+        {
+          "name": "showRetry",
+          "type": "boolean",
+          "label": "Permitir reintento",
+          "default": true,
+          "description": "Si está activado, después de comprobar la respuesta se muestra un botón para intentarlo de nuevo."
+        },
+        {
+          "name": "penalizeWrongAnswers",
+          "type": "boolean",
+          "label": "Los clics incorrectos reducen la puntuación",
+          "default": true,
+          "description": "Si está activado, las minúsculas seleccionadas incorrectamente se restan del número de clics correctos. La puntuación nunca baja de cero."
+        }
+      ]
+    },
+    {
+      "name": "l10n",
+      "type": "group",
+      "label": "Sustituciones de texto y traducciones",
+      "importance": "low",
+      "common": true,
+      "fields": [
+        {
+          "name": "checkButton",
+          "type": "text",
+          "label": "Texto del botón de comprobación",
+          "default": "Comprobar"
+        },
+        {
+          "name": "retryButton",
+          "type": "text",
+          "label": "Texto del botón de reintento",
+          "default": "Intentar de nuevo"
+        },
+        {
+          "name": "solutionPrefix",
+          "type": "text",
+          "label": "Prefijo de la etiqueta de solución",
+          "default": "Respuesta correcta:"
+        },
+        {
+          "name": "correctFeedback",
+          "type": "text",
+          "label": "Retroalimentación para una respuesta completamente correcta",
+          "default": "¡Todo correcto!"
+        },
+        {
+          "name": "noAnswerFeedback",
+          "type": "text",
+          "label": "Retroalimentación cuando no se dio respuesta",
+          "default": "Haz clic al menos en una letra."
+        },
+        {
+          "name": "scoreText",
+          "type": "text",
+          "label": "Texto del resultado",
+          "default": "Resultado: @score / @max",
+          "description": "Variables disponibles: @score y @max."
+        },
+        {
+          "name": "correctText",
+          "type": "text",
+          "label": "Texto del recuento correcto",
+          "default": "Correctas: @count",
+          "description": "Variable disponible: @count."
+        },
+        {
+          "name": "wrongText",
+          "type": "text",
+          "label": "Texto del recuento incorrecto",
+          "default": "Incorrectas: @count",
+          "description": "Variable disponible: @count."
+        },
+        {
+          "name": "missingText",
+          "type": "text",
+          "label": "Texto del recuento faltante",
+          "default": "Faltantes: @count",
+          "description": "Variable disponible: @count."
+        },
+        {
+          "name": "letterAriaLabel",
+          "type": "text",
+          "label": "Etiqueta de accesibilidad de la letra",
+          "default": "Letra @letter en la posición @position",
+          "description": "Variables disponibles: @letter y @position."
+        },
+        {
+          "name": "selectedAriaLabel",
+          "type": "text",
+          "label": "Etiqueta de accesibilidad de la letra seleccionada",
+          "default": "Letra seleccionada @letter en la posición @position",
+          "description": "Variables disponibles: @letter y @position."
+        }
+      ]
+    }
+  ],
+  "libraryStrings": {
+    "title": "Letras mayúsculas",
+    "description": "El alumnado hace clic en las letras que deberían estar escritas con mayúscula."
+  }
+}

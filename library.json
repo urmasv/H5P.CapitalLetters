@@ -1,0 +1,28 @@
+{
+  "title": "Capital Letters",
+  "description": "Learners click the letters that should be uppercase.",
+  "majorVersion": 1,
+  "minorVersion": 3,
+  "patchVersion": 9,
+  "runnable": 1,
+  "author": "UrmasV",
+  "license": "MIT",
+  "machineName": "H5P.CapitalLetters",
+  "coreApi": {
+    "majorVersion": 1,
+    "minorVersion": 24
+  },
+  "preloadedJs": [
+    {
+      "path": "js/capital-letters.js"
+    }
+  ],
+  "preloadedCss": [
+    {
+      "path": "css/capital-letters.css"
+    }
+  ],
+  "embedTypes": [
+    "iframe"
+  ]
+}

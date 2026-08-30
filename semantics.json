@@ -1,0 +1,137 @@
+[
+  {
+    "name": "taskDescription",
+    "type": "text",
+    "widget": "html",
+    "label": "Learner instructions",
+    "importance": "high",
+    "default": "Click the letters that should be uppercase.",
+    "description": "Instruction shown above the task.",
+    "tags": [
+      "p",
+      "br",
+      "strong",
+      "em",
+      "u",
+      "ul",
+      "ol",
+      "li",
+      "a",
+      "span",
+      "sub",
+      "sup"
+    ]
+  },
+  {
+    "name": "correctText",
+    "type": "text",
+    "widget": "textarea",
+    "label": "Correct text",
+    "importance": "high",
+    "default": "Hello, world! My name is Mary. Estonia's capital is Tallinn.",
+    "description": "Enter the text in its correct form. The player will see the same text completely in lowercase. Letters that are uppercase here are treated as correct answers."
+  },
+  {
+    "name": "behaviour",
+    "type": "group",
+    "label": "Behaviour settings",
+    "importance": "low",
+    "fields": [
+      {
+        "name": "showRetry",
+        "type": "boolean",
+        "label": "Enable retry",
+        "default": true,
+        "description": "If enabled, a retry button is shown after checking the answer."
+      },
+      {
+        "name": "penalizeWrongAnswers",
+        "type": "boolean",
+        "label": "Wrong clicks reduce the score",
+        "default": true,
+        "description": "If enabled, incorrectly clicked lowercase letters are subtracted from the number of correct clicks. The score never goes below zero."
+      }
+    ]
+  },
+  {
+    "name": "l10n",
+    "type": "group",
+    "label": "Text overrides and translations",
+    "importance": "low",
+    "common": true,
+    "fields": [
+      {
+        "name": "checkButton",
+        "type": "text",
+        "label": "Check button text",
+        "default": "Check"
+      },
+      {
+        "name": "retryButton",
+        "type": "text",
+        "label": "Retry button text",
+        "default": "Try again"
+      },
+      {
+        "name": "solutionPrefix",
+        "type": "text",
+        "label": "Solution label prefix",
+        "default": "Correct answer:"
+      },
+      {
+        "name": "correctFeedback",
+        "type": "text",
+        "label": "Feedback for a completely correct answer",
+        "default": "Everything is correct!"
+      },
+      {
+        "name": "noAnswerFeedback",
+        "type": "text",
+        "label": "Feedback when no answer was given",
+        "default": "Click at least one letter."
+      },
+      {
+        "name": "scoreText",
+        "type": "text",
+        "label": "Result text",
+        "default": "Score: @score / @max",
+        "description": "Available variables: @score and @max."
+      },
+      {
+        "name": "correctText",
+        "type": "text",
+        "label": "Correct count text",
+        "default": "Correct: @count",
+        "description": "Available variable: @count."
+      },
+      {
+        "name": "wrongText",
+        "type": "text",
+        "label": "Wrong count text",
+        "default": "Wrong: @count",
+        "description": "Available variable: @count."
+      },
+      {
+        "name": "missingText",
+        "type": "text",
+        "label": "Missing count text",
+        "default": "Missing: @count",
+        "description": "Available variable: @count."
+      },
+      {
+        "name": "letterAriaLabel",
+        "type": "text",
+        "label": "Letter accessibility label",
+        "default": "Letter @letter at position @position",
+        "description": "Available variables: @letter and @position."
+      },
+      {
+        "name": "selectedAriaLabel",
+        "type": "text",
+        "label": "Selected letter accessibility label",
+        "default": "Selected letter @letter at position @position",
+        "description": "Available variables: @letter and @position."
+      }
+    ]
+  }
+]

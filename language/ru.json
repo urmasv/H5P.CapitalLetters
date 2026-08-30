@@ -1,0 +1,143 @@
+{
+  "semantics": [
+    {
+      "name": "taskDescription",
+      "type": "text",
+      "widget": "html",
+      "label": "Инструкция для учащегося",
+      "importance": "high",
+      "default": "Нажми на буквы, которые должны быть написаны с заглавной буквы.",
+      "description": "Инструкция, которая показывается над заданием.",
+      "tags": [
+        "p",
+        "br",
+        "strong",
+        "em",
+        "u",
+        "ul",
+        "ol",
+        "li",
+        "a",
+        "span",
+        "sub",
+        "sup"
+      ]
+    },
+    {
+      "name": "correctText",
+      "type": "text",
+      "widget": "textarea",
+      "label": "Правильный текст",
+      "importance": "high",
+      "default": "Привет, мир! Меня зовут Мария. Столица Эстонии — Таллинн.",
+      "description": "Введите текст в правильном виде. Игроку будет показан тот же текст полностью строчными буквами. Буквы, которые здесь написаны заглавными, считаются правильными ответами."
+    },
+    {
+      "name": "behaviour",
+      "type": "group",
+      "label": "Настройки поведения",
+      "importance": "low",
+      "fields": [
+        {
+          "name": "showRetry",
+          "type": "boolean",
+          "label": "Разрешить повторную попытку",
+          "default": true,
+          "description": "Если включено, после проверки показывается кнопка для повторной попытки."
+        },
+        {
+          "name": "penalizeWrongAnswers",
+          "type": "boolean",
+          "label": "Ошибочные нажатия уменьшают балл",
+          "default": true,
+          "description": "Если включено, ошибочно выбранные строчные буквы вычитаются из числа правильных ответов. Балл не опускается ниже нуля."
+        }
+      ]
+    },
+    {
+      "name": "l10n",
+      "type": "group",
+      "label": "Замены текста и переводы",
+      "importance": "low",
+      "common": true,
+      "fields": [
+        {
+          "name": "checkButton",
+          "type": "text",
+          "label": "Текст кнопки проверки",
+          "default": "Проверить"
+        },
+        {
+          "name": "retryButton",
+          "type": "text",
+          "label": "Текст кнопки повторной попытки",
+          "default": "Попробовать снова"
+        },
+        {
+          "name": "solutionPrefix",
+          "type": "text",
+          "label": "Префикс подписи решения",
+          "default": "Правильный ответ:"
+        },
+        {
+          "name": "correctFeedback",
+          "type": "text",
+          "label": "Отзыв при полностью правильном ответе",
+          "default": "Всё правильно!"
+        },
+        {
+          "name": "noAnswerFeedback",
+          "type": "text",
+          "label": "Отзыв, если ответ не дан",
+          "default": "Нажми хотя бы на одну букву."
+        },
+        {
+          "name": "scoreText",
+          "type": "text",
+          "label": "Текст результата",
+          "default": "Результат: @score / @max",
+          "description": "Доступные переменные: @score и @max."
+        },
+        {
+          "name": "correctText",
+          "type": "text",
+          "label": "Текст количества правильных",
+          "default": "Правильных: @count",
+          "description": "Доступная переменная: @count."
+        },
+        {
+          "name": "wrongText",
+          "type": "text",
+          "label": "Текст количества ошибочных",
+          "default": "Ошибочных: @count",
+          "description": "Доступная переменная: @count."
+        },
+        {
+          "name": "missingText",
+          "type": "text",
+          "label": "Текст количества пропущенных",
+          "default": "Пропущенных: @count",
+          "description": "Доступная переменная: @count."
+        },
+        {
+          "name": "letterAriaLabel",
+          "type": "text",
+          "label": "Текст доступности для буквы",
+          "default": "Буква @letter в позиции @position",
+          "description": "Доступные переменные: @letter и @position."
+        },
+        {
+          "name": "selectedAriaLabel",
+          "type": "text",
+          "label": "Текст доступности для выбранной буквы",
+          "default": "Выбранная буква @letter в позиции @position",
+          "description": "Доступные переменные: @letter и @position."
+        }
+      ]
+    }
+  ],
+  "libraryStrings": {
+    "title": "Заглавные буквы",
+    "description": "Учащиеся нажимают на буквы, которые должны быть написаны с заглавной буквы."
+  }
+}

@@ -1,0 +1,143 @@
+{
+  "semantics": [
+    {
+      "name": "taskDescription",
+      "type": "text",
+      "widget": "html",
+      "label": "Juhis õppijale",
+      "importance": "high",
+      "default": "Kliki tähtedel, mis peaksid olema kirjutatud suure tähega.",
+      "description": "Juhis, mida näidatakse mängijale ülesande kohal.",
+      "tags": [
+        "p",
+        "br",
+        "strong",
+        "em",
+        "u",
+        "ul",
+        "ol",
+        "li",
+        "a",
+        "span",
+        "sub",
+        "sup"
+      ]
+    },
+    {
+      "name": "correctText",
+      "type": "text",
+      "widget": "textarea",
+      "label": "Õige tekst",
+      "importance": "high",
+      "default": "Tere, maailm! Mina olen Mari. Eesti pealinn on Tallinn.",
+      "description": "Sisesta tekst õigel kujul. Mängijale kuvatakse sama tekst täielikult väikeste tähtedega. Õigeks vastuseks loetakse need tähed, mis on siin väljal suure tähega."
+    },
+    {
+      "name": "behaviour",
+      "type": "group",
+      "label": "Käitumisseaded",
+      "importance": "low",
+      "fields": [
+        {
+          "name": "showRetry",
+          "type": "boolean",
+          "label": "Luba uuesti proovida",
+          "default": true,
+          "description": "Kui valitud, näidatakse pärast kontrollimist nuppu, millega saab vastuse kustutada ja uuesti proovida."
+        },
+        {
+          "name": "penalizeWrongAnswers",
+          "type": "boolean",
+          "label": "Valed klikid vähendavad punktisummat",
+          "default": true,
+          "description": "Kui valitud, lahutatakse valesti klikitud väiketähed õigete vastuste arvust maha. Tulemus ei lange alla nulli."
+        }
+      ]
+    },
+    {
+      "name": "l10n",
+      "type": "group",
+      "label": "Teksti asendused ja tõlge",
+      "importance": "low",
+      "common": true,
+      "fields": [
+        {
+          "name": "checkButton",
+          "type": "text",
+          "label": "Kontrollimise nupu tekst",
+          "default": "Kontrolli"
+        },
+        {
+          "name": "retryButton",
+          "type": "text",
+          "label": "Uuesti proovimise nupu tekst",
+          "default": "Proovi uuesti"
+        },
+        {
+          "name": "solutionPrefix",
+          "type": "text",
+          "label": "Lahenduse sildi algus",
+          "default": "Õige vastus:"
+        },
+        {
+          "name": "correctFeedback",
+          "type": "text",
+          "label": "Tagasiside täiesti õige vastuse korral",
+          "default": "Kõik õige!"
+        },
+        {
+          "name": "noAnswerFeedback",
+          "type": "text",
+          "label": "Tagasiside vastamata jätmise korral",
+          "default": "Kliki vähemalt ühel tähel."
+        },
+        {
+          "name": "scoreText",
+          "type": "text",
+          "label": "Tulemuse tekst",
+          "default": "Tulemus: @score / @max",
+          "description": "Kasutatavad muutujad: @score ja @max."
+        },
+        {
+          "name": "correctText",
+          "type": "text",
+          "label": "Õigete arv",
+          "default": "Õigeid: @count",
+          "description": "Kasutatav muutuja: @count."
+        },
+        {
+          "name": "wrongText",
+          "type": "text",
+          "label": "Valede arv",
+          "default": "Valesid: @count",
+          "description": "Kasutatav muutuja: @count."
+        },
+        {
+          "name": "missingText",
+          "type": "text",
+          "label": "Puuduvate arv",
+          "default": "Puuduvaid: @count",
+          "description": "Kasutatav muutuja: @count."
+        },
+        {
+          "name": "letterAriaLabel",
+          "type": "text",
+          "label": "Tähe ligipääsetavuse tekst",
+          "default": "Täht @letter positsioonil @position",
+          "description": "Kasutatavad muutujad: @letter ja @position."
+        },
+        {
+          "name": "selectedAriaLabel",
+          "type": "text",
+          "label": "Valitud tähe ligipääsetavuse tekst",
+          "default": "Valitud täht @letter positsioonil @position",
+          "description": "Kasutatavad muutujad: @letter ja @position."
+        }
+      ]
+    }
+  ],
+  "libraryStrings": {
+    "title": "Suur algustäht",
+    "description": "Õppija klikib tähtedel, mis peaksid olema kirjutatud suure tähega."
+  }
+}

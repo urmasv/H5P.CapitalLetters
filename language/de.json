@@ -1,0 +1,143 @@
+{
+  "semantics": [
+    {
+      "name": "taskDescription",
+      "type": "text",
+      "widget": "html",
+      "label": "Anweisung für Lernende",
+      "importance": "high",
+      "default": "Klicke auf die Buchstaben, die großgeschrieben werden sollten.",
+      "description": "Anweisung, die oberhalb der Aufgabe angezeigt wird.",
+      "tags": [
+        "p",
+        "br",
+        "strong",
+        "em",
+        "u",
+        "ul",
+        "ol",
+        "li",
+        "a",
+        "span",
+        "sub",
+        "sup"
+      ]
+    },
+    {
+      "name": "correctText",
+      "type": "text",
+      "widget": "textarea",
+      "label": "Korrekter Text",
+      "importance": "high",
+      "default": "Hallo, Welt! Ich heiße Maria. Die Hauptstadt Estlands ist Tallinn.",
+      "description": "Gib den Text in korrekter Form ein. Dem Spieler wird derselbe Text vollständig in Kleinbuchstaben angezeigt. Buchstaben, die hier großgeschrieben sind, gelten als richtige Antworten."
+    },
+    {
+      "name": "behaviour",
+      "type": "group",
+      "label": "Verhaltenseinstellungen",
+      "importance": "low",
+      "fields": [
+        {
+          "name": "showRetry",
+          "type": "boolean",
+          "label": "Wiederholen erlauben",
+          "default": true,
+          "description": "Wenn aktiviert, wird nach der Überprüfung eine Schaltfläche zum erneuten Versuch angezeigt."
+        },
+        {
+          "name": "penalizeWrongAnswers",
+          "type": "boolean",
+          "label": "Falsche Klicks verringern die Punktzahl",
+          "default": true,
+          "description": "Wenn aktiviert, werden falsch angeklickte Kleinbuchstaben von der Anzahl der richtigen Klicks abgezogen. Die Punktzahl fällt nie unter null."
+        }
+      ]
+    },
+    {
+      "name": "l10n",
+      "type": "group",
+      "label": "Textersetzungen und Übersetzungen",
+      "importance": "low",
+      "common": true,
+      "fields": [
+        {
+          "name": "checkButton",
+          "type": "text",
+          "label": "Text der Prüfen-Schaltfläche",
+          "default": "Prüfen"
+        },
+        {
+          "name": "retryButton",
+          "type": "text",
+          "label": "Text der Wiederholen-Schaltfläche",
+          "default": "Erneut versuchen"
+        },
+        {
+          "name": "solutionPrefix",
+          "type": "text",
+          "label": "Präfix der Lösungsbeschriftung",
+          "default": "Richtige Antwort:"
+        },
+        {
+          "name": "correctFeedback",
+          "type": "text",
+          "label": "Rückmeldung bei vollständig richtiger Antwort",
+          "default": "Alles richtig!"
+        },
+        {
+          "name": "noAnswerFeedback",
+          "type": "text",
+          "label": "Rückmeldung, wenn keine Antwort gegeben wurde",
+          "default": "Klicke auf mindestens einen Buchstaben."
+        },
+        {
+          "name": "scoreText",
+          "type": "text",
+          "label": "Ergebnistext",
+          "default": "Ergebnis: @score / @max",
+          "description": "Verfügbare Variablen: @score und @max."
+        },
+        {
+          "name": "correctText",
+          "type": "text",
+          "label": "Text für richtige Anzahl",
+          "default": "Richtig: @count",
+          "description": "Verfügbare Variable: @count."
+        },
+        {
+          "name": "wrongText",
+          "type": "text",
+          "label": "Text für falsche Anzahl",
+          "default": "Falsch: @count",
+          "description": "Verfügbare Variable: @count."
+        },
+        {
+          "name": "missingText",
+          "type": "text",
+          "label": "Text für fehlende Anzahl",
+          "default": "Fehlend: @count",
+          "description": "Verfügbare Variable: @count."
+        },
+        {
+          "name": "letterAriaLabel",
+          "type": "text",
+          "label": "Barrierefreiheitsbeschriftung für Buchstaben",
+          "default": "Buchstabe @letter an Position @position",
+          "description": "Verfügbare Variablen: @letter und @position."
+        },
+        {
+          "name": "selectedAriaLabel",
+          "type": "text",
+          "label": "Barrierefreiheitsbeschriftung für ausgewählte Buchstaben",
+          "default": "Ausgewählter Buchstabe @letter an Position @position",
+          "description": "Verfügbare Variablen: @letter und @position."
+        }
+      ]
+    }
+  ],
+  "libraryStrings": {
+    "title": "Großbuchstaben",
+    "description": "Lernende klicken auf die Buchstaben, die großgeschrieben werden sollten."
+  }
+}
