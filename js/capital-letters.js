@@ -633,7 +633,7 @@ var H5P = H5P || {};
 
   H5P.CapitalLetters.prototype.getTitle = function () {
     var metadata = this.extras && this.extras.metadata;
-    var title = metadata && metadata.title ? metadata.title : 'Suur algustäht';
+    var title = metadata && metadata.title ? metadata.title : 'Capital Letters';
 
     return H5P.createTitle ? H5P.createTitle(title) : title;
   };
