@@ -4,24 +4,24 @@ var H5P = H5P || {};
   'use strict';
 
   var defaults = {
-    taskDescription: 'Kliki tähtedel, mis peaksid olema kirjutatud suure tähega.',
-    correctText: 'Tere, maailm! Mina olen Mari. Eesti pealinn on Tallinn.',
+    taskDescription: 'Click the letters that should be uppercase.',
+    correctText: 'Hello, world! My name is Mary. Estonia\'s capital is Tallinn.',
     behaviour: {
       showRetry: true,
       penalizeWrongAnswers: true
     },
     l10n: {
-      checkButton: 'Kontrolli',
-      retryButton: 'Proovi uuesti',
-      solutionPrefix: 'Õige vastus:',
-      correctFeedback: 'Kõik õige!',
-      noAnswerFeedback: 'Kliki vähemalt ühel tähel.',
-      scoreText: 'Tulemus: @score / @max',
-      correctText: 'Õigeid: @count',
-      wrongText: 'Valesid: @count',
-      missingText: 'Puuduvaid: @count',
-      letterAriaLabel: 'Täht @letter positsioonil @position',
-      selectedAriaLabel: 'Valitud täht @letter positsioonil @position'
+      checkButton: 'Check',
+      retryButton: 'Try again',
+      solutionPrefix: 'Correct answer:',
+      correctFeedback: 'Everything is correct!',
+      noAnswerFeedback: 'Click at least one letter.',
+      scoreText: 'Score: @score / @max',
+      correctText: 'Correct: @count',
+      wrongText: 'Wrong: @count',
+      missingText: 'Missing: @count',
+      letterAriaLabel: 'Letter @letter at position @position',
+      selectedAriaLabel: 'Selected letter @letter at position @position'
     }
   };
 
