@@ -131,6 +131,54 @@ var H5P = H5P || {};
     return character.toLocaleUpperCase();
   };
 
+  // xAPI fill-in aruande vorming (mod_hvp / h5p-php-report FillInProcessor).
+  var XAPI_FILL_IN_PLACEHOLDER = '__________';
+  var XAPI_RESPONSES_SEPARATOR = '[,]';
+
+  /**
+   * Jagab teksti aruande osadeks. Sõna on järjestikuste tähtede jada. Sõna on
+   * hinnatav, kui selles on suurtäht (õige vastus) või õpilase valitud täht.
+   * Hinnatava sõna kohta antakse õpilase kuju ja õige kuju; muu tekst
+   * (mittehinnatavad sõnad ja märgid) kuvatakse õige tekstina.
+   *
+   * @returns {Array<{type: string, text: string, learner: string, correct: string}>}
+   */
+  var getXAPIReportParts = function (self) {
+    var parts = [];
+    var chars = self.characters || [];
+    var i = 0;
+    var j;
+    var word;
+    var learner;
+    var scored;
+    var k;
+
+    while (i < chars.length) {
+      if (!isLetter(chars[i])) {
+        parts.push({type: 'text', text: chars[i]});
+        i++;
+        continue;
+      }
+
+      word = '';
+      learner = '';
+      scored = false;
+      for (j = i; j < chars.length && isLetter(chars[j]); j++) {
+        k = self.selectedIndexes.indexOf(j) !== -1;
+        word += chars[j];
+        learner += k ? getUppercase(chars[j]) : getLowercase(chars[j]);
+        if (k || isUppercaseLetter(chars[j])) {
+          scored = true;
+        }
+      }
+
+      parts.push(scored ? {type: 'word', learner: learner, correct: word} : {type: 'text', text: word});
+      i = j;
+    }
+
+    return parts;
+  };
+
   H5P.CapitalLetters = function (params, contentId, extras) {
     H5P.EventDispatcher.call(this);
 
@@ -737,25 +785,50 @@ var H5P = H5P || {};
 
     definition.name[languageTag] = this.getTitle();
     definition.name['en-US'] = definition.name[languageTag];
-    definition.description[languageTag] = this.getDescription();
+    definition.description[languageTag] = this.getXAPIReportDescription();
     definition.description['en-US'] = definition.description[languageTag];
 
     return definition;
   };
 
-  H5P.CapitalLetters.prototype.getXAPIResponse = function () {
-    var self = this;
+  /**
+   * Aruande kirjeldus: ülesande juhend ja tekst, kus iga hinnatav sõna (sõna,
+   * milles pidi olema suurtäht või kus õpilane valis suurtähe) on asendatud
+   * xAPI fill-in kohatäitjaga (10 alakriipsu).
+   */
+  H5P.CapitalLetters.prototype.getXAPIReportDescription = function () {
+    var task = stripTags(this.params.taskDescription || '').replace(/\s+/g, ' ').trim();
+    var html = task ? '<p>' + escapeHtml(task) + '</p>' : '';
+    var text = '';
 
-    return normalizeAnswer(this.characters.map(function (character, index) {
-      if (!isLetter(character)) {
-        return character;
-      }
-      return self.selectedIndexes.indexOf(index) !== -1 ? getUppercase(character) : getLowercase(character);
-    }).join(''));
+    getXAPIReportParts(this).forEach(function (part) {
+      text += part.type === 'word' ? XAPI_FILL_IN_PLACEHOLDER : escapeHtml(part.text);
+    });
+    normalizeAnswer(text).split('\n').forEach(function (line) {
+      html += '<p>' + line + '</p>';
+    });
+
+    return html;
+  };
+
+  /**
+   * Õpilase vastus hinnatavate sõnade kaupa: sõna kujul, mille õpilane valikuga
+   * andis (valitud tähed suured, ülejäänud väikesed).
+   */
+  H5P.CapitalLetters.prototype.getXAPIResponse = function () {
+    return getXAPIReportParts(this).filter(function (part) {
+      return part.type === 'word';
+    }).map(function (part) {
+      return part.learner;
+    }).join(XAPI_RESPONSES_SEPARATOR);
   };
 
   H5P.CapitalLetters.prototype.getXAPICorrectResponsesPattern = function () {
-    return [normalizeAnswer(this.originalText)];
+    return [getXAPIReportParts(this).filter(function (part) {
+      return part.type === 'word';
+    }).map(function (part) {
+      return part.correct;
+    }).join(XAPI_RESPONSES_SEPARATOR)];
   };
 
   H5P.CapitalLetters.prototype.evaluateResult = function () {
