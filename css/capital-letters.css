@@ -1,266 +1,873 @@
-.h5p-capital-letters {
-  box-sizing: border-box;
-  font-family: "Open Sans", Arial, sans-serif;
-  line-height: 1.6;
-  padding: 1em;
-}
+var H5P = H5P || {};
 
-.h5p-capital-letters *,
-.h5p-capital-letters *::before,
-.h5p-capital-letters *::after {
-  box-sizing: border-box;
-}
+(function (H5P, $) {
+  'use strict';
 
-.h5p-capital-letters-task {
-  color: var(--h5p-theme-text-primary, inherit);
-  font-size: 1.125em;
-  font-weight: 600;
-  line-height: 1.25;
-  margin: 0 0 1em;
-}
+  var defaults = {
+    taskDescription: 'Click the letters that should be uppercase.',
+    correctText: 'Hello, world! My name is Mary. Estonia\'s capital is Tallinn.',
+    behaviour: {
+      showRetry: true,
+      penalizeWrongAnswers: true
+    },
+    l10n: {
+      checkButton: 'Check',
+      retryButton: 'Try again',
+      solutionPrefix: 'Correct answer:',
+      correctFeedback: 'Everything is correct!',
+      noAnswerFeedback: 'Click at least one letter.',
+      scoreText: 'Score: @score / @max',
+      correctText: 'Correct: @count',
+      wrongText: 'Wrong: @count',
+      missingText: 'Missing: @count',
+      letterAriaLabel: 'Letter @letter at position @position',
+      selectedAriaLabel: 'Selected letter @letter at position @position'
+    }
+  };
 
-.h5p-capital-letters-text {
-  background: #fff;
-  border: 1px solid #d0d0d0;
-  border-radius: 0.4em;
-  font-size: 1.3em;
-  line-height: 2.1;
-  margin-bottom: 1em;
-  min-height: 4em;
-  padding: 0.9em;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
+  var merge = function (target, source) {
+    target = target || {};
+    source = source || {};
 
-.h5p-capital-letters-char {
-  display: inline;
-  margin: 0 0.075em 0 0;
-  min-height: 0;
-  min-width: 0;
-  text-align: inherit;
-  vertical-align: baseline;
-}
+    Object.keys(source).forEach(function (key) {
+      if (
+        source[key] &&
+        typeof source[key] === 'object' &&
+        !Array.isArray(source[key])
+      ) {
+        target[key] = merge(target[key] || {}, source[key]);
+      }
+      else if (source[key] !== undefined && source[key] !== null) {
+        target[key] = source[key];
+      }
+    });
 
-.h5p-capital-letters-letter {
-  appearance: none;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 0.15em;
-  color: inherit;
-  cursor: pointer;
-  font: inherit;
-  line-height: inherit;
-  margin: 0 0.075em 0 0;
-  min-height: 0;
-  min-width: 0;
-  padding: 0;
-}
+    return target;
+  };
 
-.h5p-capital-letters-letter:hover,
-.h5p-capital-letters-letter:focus {
-  border-color: #777;
-  outline: 1px dotted currentColor;
-  outline-offset: 0.05em;
-}
+  var escapeHtml = function (text) {
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  };
 
-.h5p-capital-letters-letter:disabled {
-  cursor: default;
-}
+  var replacePlaceholders = function (template, values) {
+    var result = template || '';
+    Object.keys(values || {}).forEach(function (key) {
+      result = result.split('@' + key).join(values[key]);
+    });
+    return result;
+  };
 
-.h5p-capital-letters-selected {
-  background: #f7fbff;
-  border-color: #9cc4e4;
-}
+  var splitTemplateAroundCount = function (template) {
+    var source = template || '';
+    var index = source.indexOf('@count');
 
-.h5p-capital-letters-correct-letter {
-  background: #f7fbff;
-  border-color: #9cc4e4;
-}
+    if (index === -1) {
+      return {
+        before: source,
+        after: ''
+      };
+    }
 
-.h5p-capital-letters-wrong-letter {
-  background: #ffb3b3;
-  border-color: #d64a4a;
-  color: #000;
-}
+    return {
+      before: source.slice(0, index),
+      after: source.slice(index + 6)
+    };
+  };
 
-.h5p-capital-letters-missing-letter {
-  background: #ffd59e;
-  border-color: #d98300;
-  color: #000;
-  font-weight: 700;
-}
+  var createFeedbackDetailHtml = function (template, count, stateClass) {
+    var parts = splitTemplateAroundCount(template);
+    var label = ((parts.before || '') + (parts.after || '')).trim();
 
-.h5p-capital-letters-solution-letter {
-  background: #f7fbff;
-  border-color: #9cc4e4;
-  font-weight: 700;
-}
-
-.h5p-capital-letters-solution {
-  border-top: 1px solid #e1e1e1;
-  display: block;
-  font-size: 0.77em;
-  line-height: 1.5;
-  margin-top: 0.75em;
-  padding-top: 0.75em;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-.h5p-capital-letters-solution[hidden] {
-  display: none !important;
-}
-
-.h5p-capital-letters-text.is-locked,
-.h5p-capital-letters-text.is-locked * {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.h5p-capital-letters-text.is-locked .h5p-capital-letters-letter,
-.h5p-capital-letters-text.is-locked .h5p-capital-letters-letter:disabled {
-  cursor: default;
-  opacity: 1;
-  pointer-events: none;
-  -webkit-text-fill-color: currentColor;
-}
-
-.h5p-capital-letters-text.is-locked .h5p-capital-letters-letter:hover,
-.h5p-capital-letters-text.is-locked .h5p-capital-letters-letter:focus {
-  outline: none;
-}
-
-.h5p-capital-letters-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 1rem;
-}
-
-.h5p-capital-letters-controls .h5p-capital-letters-control[hidden] {
-  display: none !important;
-}
-
-.h5p-capital-letters-controls .h5p-capital-letters-control.h5p-capital-letters-check,
-.h5p-capital-letters-controls .h5p-capital-letters-control.h5p-capital-letters-retry,
-.h5p-capital-letters-controls .h5p-capital-letters-control.h5p-capital-letters-show-solution {
-  background: #1a73d9;
-  border: 0;
-  border-radius: 0.25em;
-  box-shadow: inset 0 -0.125em 0 rgba(0, 0, 0, 0.25);
-  color: #fff;
-  cursor: pointer;
-  display: inline-block;
-  font-family: inherit;
-  font-size: 1em;
-  font-weight: 600;
-  line-height: 1.25;
-  margin: 0;
-  min-height: 0;
-  padding: 0.5em 1.25em;
-  text-decoration: none;
-}
-
-.h5p-capital-letters-controls .h5p-capital-letters-control.h5p-capital-letters-check:hover,
-.h5p-capital-letters-controls .h5p-capital-letters-control.h5p-capital-letters-check:focus,
-.h5p-capital-letters-controls .h5p-capital-letters-control.h5p-capital-letters-retry:hover,
-.h5p-capital-letters-controls .h5p-capital-letters-control.h5p-capital-letters-retry:focus,
-.h5p-capital-letters-controls .h5p-capital-letters-control.h5p-capital-letters-show-solution:hover,
-.h5p-capital-letters-controls .h5p-capital-letters-control.h5p-capital-letters-show-solution:focus {
-  background: #1356a3;
-  color: #fff;
-  outline: 2px solid #1356a3;
-  outline-offset: 2px;
-}
-
-.h5p-capital-letters-controls .h5p-capital-letters-control.h5p-capital-letters-check:active,
-.h5p-capital-letters-controls .h5p-capital-letters-control.h5p-capital-letters-retry:active,
-.h5p-capital-letters-controls .h5p-capital-letters-control.h5p-capital-letters-show-solution:active {
-  box-shadow: inset 0 0.125em 0 rgba(0, 0, 0, 0.25);
-  transform: translateY(1px);
-}
-
-.h5p-capital-letters-control:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.h5p-capital-letters-feedback {
-  border: 1px solid transparent;
-  border-radius: 0.45rem;
-  font-weight: inherit;
-  margin-top: 1rem;
-  padding: 0.75rem;
-}
-
-.h5p-capital-letters-feedback:empty {
-  display: none;
-}
-
-.h5p-capital-letters-feedback-success {
-  background: #f0fff4;
-  border-color: #7bc47f;
-}
-
-.h5p-capital-letters-feedback-failure {
-  background: #fff5f5;
-  border-color: #f2a6a6;
-}
-
-.h5p-capital-letters-result-score {
-  font-weight: 700;
-  margin-bottom: 0.25rem;
-}
-
-.h5p-capital-letters-result-score:last-child {
-  margin-bottom: 0;
-}
+    return '<span class="h5p-capital-letters-result-detail-item">' +
+      (label ? '<span>' + escapeHtml(label) + '</span>' : '') +
+      '<span class="h5p-capital-letters-feedback-count ' + escapeHtml(stateClass || '') + '">' +
+      escapeHtml(String(count)) +
+      '</span>' +
+      '</span>';
+  };
 
 
-.h5p-capital-letters-result-details {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 1rem;
-  overflow-x: auto;
-  white-space: nowrap;
-}
+  var normalizeAnswer = function (text) {
+    return String(text || '').replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  };
 
-.h5p-capital-letters-result-detail-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  color: #000;
-}
+  var extendObject = function (target, source) {
+    var key;
 
-.h5p-capital-letters-feedback-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.8em;
-  min-height: 1.7em;
-  padding: 0.05em 0.45em;
-  border-radius: 0.25em;
-  border: 1px dashed #9cc4e4;
-  box-shadow: none;
-  color: #000;
-  line-height: 1.4;
-  text-align: center;
-  font-weight: 700;
-}
+    target = target || {};
+    source = source || {};
 
-.h5p-capital-letters-feedback-count.h5p-capital-letters-select-correct {
-  background: #f7fbff;
-  border-color: #9cc4e4;
-}
+    for (key in source) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
+        target[key] = source[key];
+      }
+    }
 
-.h5p-capital-letters-feedback-count.h5p-capital-letters-select-wrong {
-  background: #ffb3b3;
-  border-color: #d64a4a;
-}
+    return target;
+  };
 
-.h5p-capital-letters-feedback-count.h5p-capital-letters-select-missing {
-  background: #ffd59e;
-  border-color: #d98300;
-}
+  var stripTags = function (text) {
+    return String(text || '').replace(/<[^>]+>/g, '');
+  };
+
+  var isLetter = function (character) {
+    return character.toLocaleLowerCase() !== character.toLocaleUpperCase();
+  };
+
+  var isUppercaseLetter = function (character) {
+    return isLetter(character) && character === character.toLocaleUpperCase() && character !== character.toLocaleLowerCase();
+  };
+
+  var getLowercase = function (character) {
+    return character.toLocaleLowerCase();
+  };
+
+  var getUppercase = function (character) {
+    return character.toLocaleUpperCase();
+  };
+
+  // xAPI fill-in aruande vorming (mod_hvp / h5p-php-report FillInProcessor).
+  var XAPI_FILL_IN_PLACEHOLDER = '__________';
+  var XAPI_RESPONSES_SEPARATOR = '[,]';
+
+  /**
+   * Jagab teksti aruande osadeks. Sõna on järjestikuste tähtede jada. Sõna on
+   * hinnatav, kui selles on suurtäht (õige vastus) või õpilase valitud täht.
+   * Hinnatava sõna kohta antakse õpilase kuju ja õige kuju; muu tekst
+   * (mittehinnatavad sõnad ja märgid) kuvatakse õige tekstina.
+   *
+   * @returns {Array<{type: string, text: string, learner: string, correct: string}>}
+   */
+  var getXAPIReportParts = function (self) {
+    var parts = [];
+    var chars = self.characters || [];
+    var i = 0;
+    var j;
+    var word;
+    var learner;
+    var scored;
+    var k;
+
+    while (i < chars.length) {
+      if (!isLetter(chars[i])) {
+        parts.push({type: 'text', text: chars[i]});
+        i++;
+        continue;
+      }
+
+      word = '';
+      learner = '';
+      scored = false;
+      for (j = i; j < chars.length && isLetter(chars[j]); j++) {
+        k = self.selectedIndexes.indexOf(j) !== -1;
+        word += chars[j];
+        learner += k ? getUppercase(chars[j]) : getLowercase(chars[j]);
+        if (k || isUppercaseLetter(chars[j])) {
+          scored = true;
+        }
+      }
+
+      parts.push(scored ? {type: 'word', learner: learner, correct: word} : {type: 'text', text: word});
+      i = j;
+    }
+
+    return parts;
+  };
+
+  H5P.CapitalLetters = function (params, contentId, extras) {
+    H5P.EventDispatcher.call(this);
+
+    this.params = merge(merge({}, defaults), params || {});
+    this.contentId = contentId;
+    this.extras = extras || {};
+
+    this.originalText = String(this.params.correctText || defaults.correctText);
+    this.characters = Array.from(this.originalText);
+    this.solutionIndexes = [];
+    this.selectedIndexes = [];
+    this.answerGiven = false;
+    this.checked = false;
+    this.showingSolution = false;
+    this.score = 0;
+    this.maxScore = 0;
+    this.lastStats = null;
+    this.lastResult = null;
+    this.$container = null;
+    this.$letters = null;
+    this.$feedback = null;
+    this.$solutionArea = null;
+    this.$checkButton = null;
+    this.$retryButton = null;
+
+    this.prepareSolution();
+  };
+
+  H5P.CapitalLetters.prototype = Object.create(H5P.EventDispatcher.prototype);
+  H5P.CapitalLetters.prototype.constructor = H5P.CapitalLetters;
+
+  H5P.CapitalLetters.prototype.prepareSolution = function () {
+    var self = this;
+
+    self.solutionIndexes = [];
+    self.characters.forEach(function (character, index) {
+      if (isUppercaseLetter(character)) {
+        self.solutionIndexes.push(index);
+      }
+    });
+
+    self.maxScore = self.solutionIndexes.length;
+  };
+
+  H5P.CapitalLetters.prototype.attach = function ($container) {
+    var self = this;
+    self.$container = $container;
+    self.$container.addClass('h5p-capital-letters').html('');
+
+    var $task = $('<div>', {
+      'class': 'h5p-capital-letters-task'
+    }).text(self.params.taskDescription || defaults.taskDescription);
+
+    self.$letters = $('<div>', {
+      'class': 'h5p-capital-letters-text',
+      'role': 'group',
+      'aria-label': self.params.taskDescription || defaults.taskDescription
+    });
+
+    self.$solutionArea = $('<div>', {
+      'class': 'h5p-capital-letters-solution',
+      'aria-live': 'polite'
+    }).attr('hidden', true);
+
+    if (self.$letters[0]) {
+      self.$letters[0].addEventListener('click', function (event) {
+        if (!self.checked) {
+          return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+      }, true);
+
+      self.$letters[0].addEventListener('keydown', function (event) {
+        if (!self.checked) {
+          return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+      }, true);
+
+      self.$letters[0].addEventListener('selectstart', function (event) {
+        if (!self.checked) {
+          return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+      }, true);
+
+      self.$letters[0].addEventListener('dragstart', function (event) {
+        if (!self.checked) {
+          return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+      }, true);
+
+      self.$letters[0].addEventListener('mousedown', function (event) {
+        if (!self.checked) {
+          return;
+        }
+        event.preventDefault();
+      }, true);
+    }
+
+    self.renderCharacters();
+
+    self.$checkButton = $('<button>', {
+      'class': 'h5p-capital-letters-control h5p-capital-letters-check',
+      'type': 'button'
+    }).text(self.params.l10n.checkButton || defaults.l10n.checkButton)
+      .on('click', function () {
+        self.checkAnswer();
+      });
+
+    self.$retryButton = $('<button>', {
+      'class': 'h5p-capital-letters-control h5p-capital-letters-retry',
+      'type': 'button'
+    }).text(self.params.l10n.retryButton || defaults.l10n.retryButton)
+      .on('click', function () {
+        self.resetTask();
+      })
+      .hide();
+
+    var $buttonBar = $('<div>', {
+      'class': 'h5p-capital-letters-controls'
+    }).append(self.$checkButton, self.$retryButton);
+
+    self.$feedback = $('<div>', {
+      'class': 'h5p-capital-letters-feedback',
+      'aria-live': 'polite'
+    });
+
+    self.$container.append($task, self.$letters, $buttonBar, self.$feedback);
+    self.updateControls();
+    self.trigger('resize');
+  };
+
+  H5P.CapitalLetters.prototype.renderCharacters = function () {
+    var self = this;
+    self.$letters.html('');
+
+    self.characters.forEach(function (character, index) {
+      var displayCharacter = getLowercase(character);
+
+      if (character === '\n') {
+        self.$letters.append(document.createElement('br'));
+        return;
+      }
+
+      if (!isLetter(character)) {
+        self.$letters.append($('<span>', {
+          'class': 'h5p-capital-letters-char h5p-capital-letters-static'
+        }).html(escapeHtml(displayCharacter)));
+        return;
+      }
+
+      var $letter = $('<button>', {
+        'class': 'h5p-capital-letters-char h5p-capital-letters-letter',
+        'type': 'button',
+        'data-index': index,
+        'aria-pressed': 'false',
+        'aria-label': replacePlaceholders(self.params.l10n.letterAriaLabel || defaults.l10n.letterAriaLabel, {
+          letter: displayCharacter,
+          position: index + 1
+        })
+      }).html(escapeHtml(displayCharacter));
+
+      $letter.on('click', function (event) {
+        if (self.checked) {
+          event.preventDefault();
+          return;
+        }
+        self.toggleLetter($(this));
+      });
+
+      self.$letters.append($letter);
+    });
+
+    if (self.$solutionArea) {
+      self.$letters.append(self.$solutionArea);
+      self.renderSolutionArea();
+    }
+  };
+
+  H5P.CapitalLetters.prototype.renderSolutionArea = function () {
+    if (!this.$solutionArea) {
+      return;
+    }
+
+    this.$solutionArea.empty();
+
+    var $prefix = $('<strong>').text((this.params.l10n.solutionPrefix || defaults.l10n.solutionPrefix) + ' ');
+    this.$solutionArea.append($prefix, document.createTextNode(this.originalText));
+    this.$solutionArea.attr('hidden', !(this.checked && this.showingSolution));
+  };
+
+  H5P.CapitalLetters.prototype.toggleLetter = function ($letter) {
+    if (this.checked || this.showingSolution || $letter.prop('disabled')) {
+      return;
+    }
+
+    var index = parseInt($letter.attr('data-index'), 10);
+    var selectedIndex = this.selectedIndexes.indexOf(index);
+    var lowercaseCharacter = getLowercase(this.characters[index]);
+    var uppercaseCharacter = getUppercase(this.characters[index]);
+
+    if (selectedIndex === -1) {
+      this.selectedIndexes.push(index);
+      $letter.addClass('h5p-capital-letters-selected')
+        .html(escapeHtml(uppercaseCharacter))
+        .attr('aria-pressed', 'true')
+        .attr('aria-label', replacePlaceholders(this.params.l10n.selectedAriaLabel || defaults.l10n.selectedAriaLabel, {
+          letter: uppercaseCharacter,
+          position: index + 1
+        }));
+    }
+    else {
+      this.selectedIndexes.splice(selectedIndex, 1);
+      $letter.removeClass('h5p-capital-letters-selected')
+        .html(escapeHtml(lowercaseCharacter))
+        .attr('aria-pressed', 'false')
+        .attr('aria-label', replacePlaceholders(this.params.l10n.letterAriaLabel || defaults.l10n.letterAriaLabel, {
+          letter: lowercaseCharacter,
+          position: index + 1
+        }));
+    }
+
+    if (this.$feedback && !this.checked) {
+      this.$feedback
+        .removeClass('h5p-capital-letters-feedback-success h5p-capital-letters-feedback-failure')
+        .html('');
+    }
+
+    this.updateControls();
+  };
+
+  H5P.CapitalLetters.prototype.getStats = function () {
+    var solutionSet = new Set(this.solutionIndexes);
+    var selectedSet = new Set(this.selectedIndexes);
+    var correct = 0;
+    var wrong = 0;
+    var missing = 0;
+
+    this.selectedIndexes.forEach(function (index) {
+      if (solutionSet.has(index)) {
+        correct++;
+      }
+      else {
+        wrong++;
+      }
+    });
+
+    this.solutionIndexes.forEach(function (index) {
+      if (!selectedSet.has(index)) {
+        missing++;
+      }
+    });
+
+    return {
+      correct: correct,
+      wrong: wrong,
+      missing: missing
+    };
+  };
+
+  H5P.CapitalLetters.prototype.calculateScore = function () {
+    var stats = this.getStats();
+    var score = stats.correct;
+
+    if (this.params.behaviour.penalizeWrongAnswers) {
+      score -= stats.wrong;
+    }
+
+    return Math.max(0, Math.min(score, this.getMaxScore()));
+  };
+
+  H5P.CapitalLetters.prototype.setResponseAreaLocked = function (locked) {
+    if (!this.$letters) {
+      return;
+    }
+
+    locked = !!locked;
+
+    this.$letters
+      .toggleClass('is-locked', locked)
+      .attr('aria-disabled', locked ? 'true' : 'false')
+      .attr('unselectable', locked ? 'on' : null);
+
+    this.$letters.find('.h5p-capital-letters-letter').each(function () {
+      var $letter = $(this);
+
+      $letter
+        .prop('disabled', locked)
+        .attr('aria-disabled', locked ? 'true' : 'false');
+
+      if (locked) {
+        $letter.attr('tabindex', '-1');
+      }
+      else {
+        $letter.removeAttr('tabindex');
+      }
+    });
+  };
+
+  H5P.CapitalLetters.prototype.applyResultClasses = function () {
+    var self = this;
+
+    self.$letters.find('.h5p-capital-letters-letter').each(function () {
+      var $letter = $(this);
+      var index = parseInt($letter.attr('data-index'), 10);
+      var isSolution = self.solutionIndexes.indexOf(index) !== -1;
+      var isSelected = self.selectedIndexes.indexOf(index) !== -1;
+      var displayCharacter = isSelected ? getUppercase(self.characters[index]) : getLowercase(self.characters[index]);
+
+      $letter
+        .removeClass('h5p-capital-letters-selected h5p-capital-letters-correct-letter h5p-capital-letters-wrong-letter h5p-capital-letters-missing-letter h5p-capital-letters-solution-letter')
+        .html(escapeHtml(displayCharacter));
+
+      if (!isSolution && isSelected) {
+        $letter.addClass('h5p-capital-letters-wrong-letter');
+      }
+      else if (isSolution && !isSelected) {
+        $letter.addClass('h5p-capital-letters-missing-letter');
+      }
+    });
+  };
+
+  H5P.CapitalLetters.prototype.applySolutionClasses = function () {
+    var self = this;
+
+    self.$letters.find('.h5p-capital-letters-letter').each(function () {
+      var $letter = $(this);
+      var index = parseInt($letter.attr('data-index'), 10);
+      var isSolution = self.solutionIndexes.indexOf(index) !== -1;
+      var displayCharacter = isSolution ? self.characters[index] : getLowercase(self.characters[index]);
+
+      $letter
+        .removeClass('h5p-capital-letters-correct-letter h5p-capital-letters-wrong-letter h5p-capital-letters-missing-letter h5p-capital-letters-solution-letter')
+        .html(escapeHtml(displayCharacter));
+
+      if (isSolution) {
+        $letter.addClass('h5p-capital-letters-solution-letter');
+      }
+    });
+  };
+
+  H5P.CapitalLetters.prototype.updateControls = function () {
+    var canCheck = !this.checked && this.selectedIndexes.length > 0;
+
+    if (this.$checkButton) {
+      this.$checkButton
+        .toggle(!this.checked)
+        .prop('disabled', !canCheck)
+        .attr('aria-disabled', canCheck ? 'false' : 'true');
+    }
+    if (this.$retryButton) {
+      this.$retryButton.toggle(!!this.checked && !!this.params.behaviour.showRetry);
+    }
+  };
+
+  H5P.CapitalLetters.prototype.checkAnswer = function () {
+    var self = this;
+    var stats;
+
+    if (self.checked) {
+      return;
+    }
+
+    if (self.selectedIndexes.length === 0) {
+      self.showNoAnswerFeedback();
+      self.updateControls();
+      self.trigger('resize');
+      return;
+    }
+
+    self.checked = true;
+    self.answerGiven = true;
+    self.showingSolution = true;
+    self.score = self.calculateScore();
+    self.renderSolutionArea();
+    stats = self.getStats();
+    self.lastStats = stats;
+    self.lastResult = {
+      score: self.score,
+      maxScore: self.maxScore,
+      correct: stats.correct,
+      wrong: stats.wrong,
+      missing: stats.missing,
+      success: self.score === self.maxScore && stats.wrong === 0 && stats.missing === 0
+    };
+
+    self.applyResultClasses();
+    self.setResponseAreaLocked(true);
+    self.showFeedback(stats);
+    self.updateControls();
+
+    self.emitXAPIResult(self.lastResult);
+    self.trigger('resize');
+  };
+
+  H5P.CapitalLetters.prototype.showNoAnswerFeedback = function () {
+    this.$feedback
+      .removeClass('h5p-capital-letters-feedback-success h5p-capital-letters-feedback-failure')
+      .addClass('h5p-capital-letters-feedback-failure')
+      .html(
+        '<div class="h5p-capital-letters-result-score">' +
+        escapeHtml(this.params.l10n.noAnswerFeedback || defaults.l10n.noAnswerFeedback) +
+        '</div>'
+      );
+  };
+
+  H5P.CapitalLetters.prototype.showFeedback = function (stats) {
+    var isPerfect = this.getScore() === this.getMaxScore() && stats.wrong === 0 && stats.missing === 0;
+    var html = '';
+
+    var scoreLine = replacePlaceholders(this.params.l10n.scoreText || defaults.l10n.scoreText, {
+      score: this.getScore(),
+      max: this.getMaxScore()
+    });
+
+    if (isPerfect) {
+      html += '<div class="h5p-capital-letters-result-score">' +
+        escapeHtml(this.params.l10n.correctFeedback || defaults.l10n.correctFeedback) +
+        '</div>';
+    }
+
+    html +=
+      '<div class="h5p-capital-letters-result-score">' + escapeHtml(scoreLine) + '</div>' +
+      '<div class="h5p-capital-letters-result-details">' +
+      createFeedbackDetailHtml(this.params.l10n.correctText || defaults.l10n.correctText, stats.correct, 'h5p-capital-letters-select-correct') +
+      createFeedbackDetailHtml(this.params.l10n.wrongText || defaults.l10n.wrongText, stats.wrong, 'h5p-capital-letters-select-wrong') +
+      createFeedbackDetailHtml(this.params.l10n.missingText || defaults.l10n.missingText, stats.missing, 'h5p-capital-letters-select-missing') +
+      '</div>';
+
+    this.$feedback
+      .removeClass('h5p-capital-letters-feedback-success h5p-capital-letters-feedback-failure')
+      .addClass(isPerfect ? 'h5p-capital-letters-feedback-success' : 'h5p-capital-letters-feedback-failure')
+      .html(html);
+  };
+
+  H5P.CapitalLetters.prototype.toggleSolution = function () {
+    if (!this.checked) {
+      return;
+    }
+
+    this.showingSolution = !this.showingSolution;
+    this.renderSolutionArea();
+
+    this.setResponseAreaLocked(true);
+    this.trigger('resize');
+  };
+
+  H5P.CapitalLetters.prototype.showSolutions = function () {
+    if (!this.checked && this.getAnswerGiven()) {
+      this.checkAnswer();
+    }
+    if (!this.checked) {
+      return;
+    }
+    if (!this.showingSolution) {
+      this.toggleSolution();
+    }
+  };
+
+  H5P.CapitalLetters.prototype.resetTask = function () {
+    this.selectedIndexes = [];
+    this.answerGiven = false;
+    this.checked = false;
+    this.showingSolution = false;
+    this.score = 0;
+    this.lastStats = null;
+    this.lastResult = null;
+
+    if (this.$letters) {
+      this.renderCharacters();
+      this.setResponseAreaLocked(false);
+    }
+    if (this.$feedback) {
+      this.$feedback
+        .removeClass('h5p-capital-letters-feedback-success h5p-capital-letters-feedback-failure')
+        .html('');
+    }
+    this.renderSolutionArea();
+    this.updateControls();
+    this.trigger('resize');
+  };
+
+  H5P.CapitalLetters.prototype.getAnswerGiven = function () {
+    return !!this.answerGiven || this.selectedIndexes.length > 0;
+  };
+
+  H5P.CapitalLetters.prototype.getScore = function () {
+    return this.checked ? this.score : this.calculateScore();
+  };
+
+  H5P.CapitalLetters.prototype.getMaxScore = function () {
+    return this.maxScore;
+  };
+
+  H5P.CapitalLetters.prototype.getTitle = function () {
+    var metadata = this.extras && this.extras.metadata;
+    var title = metadata && metadata.title ? metadata.title : 'Capital Letters';
+
+    return H5P.createTitle ? H5P.createTitle(title) : title;
+  };
+
+  H5P.CapitalLetters.prototype.getDescription = function () {
+    var description = stripTags(this.params.taskDescription || '').replace(/\s+/g, ' ').trim();
+
+    return description || this.getTitle();
+  };
+
+  H5P.CapitalLetters.prototype.getLanguageTag = function () {
+    var metadata = this.extras && this.extras.metadata;
+    var language = (metadata && (metadata.defaultLanguage || metadata.language)) || 'et';
+    var parts = String(language).replace('_', '-').split('-');
+
+    if (!parts[0]) {
+      return 'et';
+    }
+
+    parts[0] = parts[0].toLowerCase();
+    if (parts[1]) {
+      parts[1] = parts[1].toUpperCase();
+    }
+
+    return parts.length === 1 ? parts[0] : parts.join('-');
+  };
+
+  H5P.CapitalLetters.prototype.getXAPIData = function () {
+    var event = this.getXAPIAnswerEvent();
+
+    return event ? {
+      statement: event.data.statement
+    } : null;
+  };
+
+  H5P.CapitalLetters.prototype.getXAPIAnswerEvent = function (result) {
+    var event;
+    var statementResult;
+
+    result = result || this.lastResult || this.evaluateResult();
+    event = this.createXAPIEvent('answered');
+
+    if (!event || !event.data || !event.data.statement) {
+      return null;
+    }
+
+    if (typeof event.setScoredResult === 'function') {
+      event.setScoredResult(result.score, result.maxScore, this, true, result.success);
+    }
+
+    statementResult = event.data.statement.result = event.data.statement.result || {};
+    statementResult.response = this.getXAPIResponse();
+    statementResult.completion = true;
+    statementResult.success = !!result.success;
+    statementResult.score = statementResult.score || {};
+    statementResult.score.raw = result.score;
+    statementResult.score.max = result.maxScore;
+    statementResult.score.min = 0;
+    statementResult.score.scaled = result.maxScore > 0 ? result.score / result.maxScore : 0;
+
+    return event;
+  };
+
+  H5P.CapitalLetters.prototype.createXAPIEvent = function (verb) {
+    var event;
+    var definition;
+
+    if (typeof this.createXAPIEventTemplate === 'function') {
+      event = this.createXAPIEventTemplate(verb);
+    }
+    else if (H5P.XAPIEvent) {
+      event = new H5P.XAPIEvent(verb);
+    }
+
+    if (!event || !event.data || !event.data.statement) {
+      return null;
+    }
+
+    if (typeof event.getVerifiedStatementValue === 'function') {
+      definition = event.getVerifiedStatementValue(['object', 'definition']);
+    }
+    else {
+      event.data.statement.object = event.data.statement.object || {};
+      definition = event.data.statement.object.definition = event.data.statement.object.definition || {};
+    }
+
+    extendObject(definition, this.getxAPIDefinition());
+
+    return event;
+  };
+
+  H5P.CapitalLetters.prototype.getxAPIDefinition = function () {
+    var languageTag = this.getLanguageTag();
+    var definition = {
+      name: {},
+      description: {},
+      type: 'http://adlnet.gov/expapi/activities/cmi.interaction',
+      interactionType: 'fill-in',
+      correctResponsesPattern: this.getXAPICorrectResponsesPattern()
+    };
+
+    definition.name[languageTag] = this.getTitle();
+    definition.name['en-US'] = definition.name[languageTag];
+    definition.description[languageTag] = this.getXAPIReportDescription();
+    definition.description['en-US'] = definition.description[languageTag];
+
+    return definition;
+  };
+
+  /**
+   * Aruande kirjeldus: ülesande juhend ja tekst, kus iga hinnatav sõna (sõna,
+   * milles pidi olema suurtäht või kus õpilane valis suurtähe) on asendatud
+   * xAPI fill-in kohatäitjaga (10 alakriipsu).
+   */
+  H5P.CapitalLetters.prototype.getXAPIReportDescription = function () {
+    var task = stripTags(this.params.taskDescription || '').replace(/\s+/g, ' ').trim();
+    var html = task ? '<p>' + escapeHtml(task) + '</p>' : '';
+    var text = '';
+
+    getXAPIReportParts(this).forEach(function (part) {
+      text += part.type === 'word' ? XAPI_FILL_IN_PLACEHOLDER : escapeHtml(part.text);
+    });
+    normalizeAnswer(text).split('\n').forEach(function (line) {
+      html += '<p>' + line + '</p>';
+    });
+
+    return html;
+  };
+
+  /**
+   * Õpilase vastus hinnatavate sõnade kaupa: sõna kujul, mille õpilane valikuga
+   * andis (valitud tähed suured, ülejäänud väikesed).
+   */
+  H5P.CapitalLetters.prototype.getXAPIResponse = function () {
+    return getXAPIReportParts(this).filter(function (part) {
+      return part.type === 'word';
+    }).map(function (part) {
+      return part.learner;
+    }).join(XAPI_RESPONSES_SEPARATOR);
+  };
+
+  H5P.CapitalLetters.prototype.getXAPICorrectResponsesPattern = function () {
+    return [getXAPIReportParts(this).filter(function (part) {
+      return part.type === 'word';
+    }).map(function (part) {
+      return part.correct;
+    }).join(XAPI_RESPONSES_SEPARATOR)];
+  };
+
+  H5P.CapitalLetters.prototype.evaluateResult = function () {
+    var stats = this.lastStats || this.getStats();
+    var score = this.checked ? this.score : this.calculateScore();
+    var maxScore = this.getMaxScore();
+
+    return {
+      score: score,
+      maxScore: maxScore,
+      correct: stats.correct || 0,
+      wrong: stats.wrong || 0,
+      missing: stats.missing || 0,
+      success: score === maxScore && (stats.wrong || 0) === 0 && (stats.missing || 0) === 0
+    };
+  };
+
+  H5P.CapitalLetters.prototype.emitXAPIResult = function (result) {
+    var event;
+
+    try {
+      event = this.getXAPIAnswerEvent(result);
+      if (event) {
+        this.trigger(event);
+      }
+    }
+    catch (e) {
+      // Older H5P integrations may not expose all xAPI helpers for custom libraries.
+    }
+  };
+
+  H5P.CapitalLetters.prototype.triggerAnswered = function (score, maxScore) {
+    this.emitXAPIResult({
+      score: score,
+      maxScore: maxScore,
+      wrong: Math.max(0, maxScore - score),
+      success: score === maxScore
+    });
+  };
+
+
+})(H5P, H5P.jQuery);
